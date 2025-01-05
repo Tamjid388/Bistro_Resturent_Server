@@ -28,10 +28,23 @@ async function run() {
   try {
     await client.connect()
 const menuCollection=client.db("BistroDB").collection("Menu")
+const reviewsCollection=client.db("BistroDB").collection("reviews")
+const CartCollection=client.db("BistroDB").collection("Cart")
 
 app.get("/menu",async(req,res)=>{
     const result = await menuCollection.find().toArray();
      res.send(result)  
+})
+app.get("/reviews",async(req,res)=>{
+    const result = await reviewsCollection.find().toArray();
+     res.send(result)  
+})
+// --Carts COllection
+app.post("/cart",async(req,res)=>{
+  const cartItem=req.body
+  const result=await CartCollection.insertOne(cartItem)
+  res.send(result)
+
 })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
