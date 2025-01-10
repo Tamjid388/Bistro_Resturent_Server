@@ -28,6 +28,7 @@ async function run() {
     const menuCollection = client.db("BistroDB").collection("Menu");
     const reviewsCollection = client.db("BistroDB").collection("reviews");
     const CartCollection = client.db("BistroDB").collection("Cart");
+    const userCollection = client.db("BistroDB").collection("users");
 
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
@@ -51,14 +52,24 @@ async function run() {
       const result = await CartCollection.insertOne(cartItem);
       res.send(result);
     });
-    app.delete('/carts/:id',async(req,res)=>{
-      const id=req.params.id
-      const query={_id:new ObjectId(id)}
-      const result=await CartCollection.deleteOne(query)
-      res.send(result)
-    })
-    
-
+    app.delete("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await CartCollection.deleteOne(query);
+      res.send(result);
+    });
+    // Users Related Api
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const query={email:user.email}
+      console.log(query);
+      const existingUser=await userCollection.findOne(query)
+      if(existingUser){
+        return res.send({massage:"user already exist",insertedId:null})
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
